@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bash
+
+# Waits for the network to be available. This is mostly necessary when using a VPN for Internet access
+
+curl -o /dev/null --retry 8 https://plex.tv || true

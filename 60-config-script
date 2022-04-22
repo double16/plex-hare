@@ -1,0 +1,35 @@
+#!/usr/bin/with-contenv bash
+
+if [ -d /opt/Scripts ]; then
+    mkdir -p "/config/Library/Application Support/Plex Media Server/Scripts"
+    cp /opt/Scripts/* "/config/Library/Application Support/Plex Media Server/Scripts/"
+    chown -R plex:plex "/config/Library/Application Support/Plex Media Server/Scripts"
+fi
+
+mkdir -p /var/log/dvr
+chown plex /var/log/dvr
+
+if [[ -e /var/run/docker.sock ]]; then
+    G="$(stat --printf=%g /var/run/docker.sock)"
+    if ! grep -q ":${G}:" /etc/group; then
+        groupadd -g ${G} docker
+    fi
+    usermod -G "${G}" -a plex
+fi
+
+# Background script to adjust LiveTV/DVR process priorities
+if [[ -x /opt/Scripts/plex-process-priority.sh ]]; then
+    /opt/Scripts/plex-process-priority.sh >/dev/null &
+fi
+
+# Wrap commercial skipper script for efficiency and tuning
+COMSKIP="/usr/lib/plexmediaserver/Plex Commercial Skipper"
+COMSKIP_MOVED="/usr/lib/plexmediaserver/Plex Commercial Skipper.orig"
+COMSKIP_WRAPPER="/opt/Scripts/comskip-wrapper.sh"
+
+if [[ -e "${COMSKIP_WRAPPER}" ]] && [[ -e "${COMSKIP}" ]] && file "${COMSKIP}" | grep -q ELF; then
+   mv -f "${COMSKIP}" "${COMSKIP_MOVED}"
+   cp "${COMSKIP_WRAPPER}" "${COMSKIP}"
+   chmod +x "${COMSKIP}"
+   chown "--reference=${COMSKIP_MOVED}" "${COMSKIP}"
+fi
