@@ -42,7 +42,7 @@ volumes:
 services:
 
   media-hare:
-    image: ghcr.io/double16/media-hare:latest
+    image: ghcr.io/double16/media-hare:main
     restart: unless-stopped
     volumes:
       - plextranscode:/transcode
