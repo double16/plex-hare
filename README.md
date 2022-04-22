@@ -53,7 +53,7 @@ services:
       - /dev/dri:/dev/dri
 
   plex:
-    build: plex
+    image: ghcr.io/double16/plex-hare:public
     restart: unless-stopped
     cap_add:
       - sys_nice
