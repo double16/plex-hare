@@ -1,11 +1,19 @@
 # plex-hare
+
+[![GitHub Issues](https://img.shields.io/github/issues-raw/double16/plex-hare.svg)](https://github.com/double16/plex-hare/issues)
+[![Build](https://github.com/double16/plex-hare/workflows/Build/badge.svg)](https://github.com/double16/plex-hare/actions?query=workflow%3ABuild)
+[![](https://img.shields.io/badge/Donate-Buy%20me%20a%20coffee-orange.svg)](https://www.buymeacoffee.com/patDj)
+
 Modify the standard Plex docker images to use [media-hare](https://github.com/double16/plex-hare) tools.
 
-## DVR post processing
+## DVR post-processing
 
 Configure your Plex DVR post processing script to `/config/Library/Application Support/Plex Media Server/Scripts/dvr-post-process-wrapper.sh`.
 
 If the container isn't available the DVR file will be added as-is.
+
+If your machine is low powered, you can leave the post-processing script empty and the media-hare container will
+transcode on a schedule.
 
 ## Commercial Processing
 
@@ -23,12 +31,15 @@ program is called. So there is a safe fall back.
 ## Priorities
 
 Not related to media-hare but very useful is that some Plex processes priorities are adjusted to improve results on
-resource limited servers. See plex-process-priority.sh comments for details. Most importantly TV recording processes
-are set to real-time to reduce missed/late recordings when the server is under load.
+resource limited servers. See plex-process-priority.sh comments for details. Most importantly, TV recording processes
+are set to real-time priority to reduce missed/late recordings when the server is under load.
 
 ## Usage
 
 docker-compose.yml looks like:
+
+It is necessary that both the `media-hare` and `plex-hare` containers mount media into the same path. In the following
+example, `/media`.
 
 ```yaml
 version: "3.4"
@@ -48,7 +59,7 @@ services:
       - plextranscode:/transcode
       - plexoptimize:/optimize
       - plexpreview:/preview
-      - /path/to/media:/home/Dropbox
+      - /path/to/media:/media
     devices:
       - /dev/dri:/dev/dri
 
@@ -80,7 +91,7 @@ services:
       - plexconfig:/config
       - plexoptimize:/optimize
       - plexpreview:/preview
-      - /path/to/media:/home/Dropbox
+      - /path/to/media:/media
       - /var/run/docker.sock:/var/run/docker.sock
     devices:
       - /dev/dri:/dev/dri
