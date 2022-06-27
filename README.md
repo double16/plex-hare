@@ -8,18 +8,19 @@ Modify the standard Plex docker images to use [media-hare](https://github.com/do
 
 ## DVR post-processing
 
-Configure your Plex DVR post processing script to `/config/Library/Application Support/Plex Media Server/Scripts/dvr-post-process-wrapper.sh`.
+Configure your Plex DVR post processing script to `/config/Library/Application Support/Plex Media Server/Scripts/dvr-post-process-wrapper.sh`. The script is designed to be nice to machines with low resources. No video or audio transcoding is done, unless post_process.profanity_filter is 'true', and in that case audio transcoding may be
+necessary. The post-processing script does change the container to mkv (which reduces storage), one audio stream is kept that matches the configured language and has the highest bit-rate. If no audio stream with the configured language is found, the highest bit-rate stream is used.
 
-If the container isn't available the DVR file will be added as-is.
+If the container isn't available the DVR file will be added as if there were no post-processing script. We don't want to lose content if something goes wrong with the media-hare container.
 
-If your machine is low powered, you can leave the post-processing script empty and the media-hare container will
+If your machine don't perform well with this script, you can leave the post-processing script empty and the media-hare container will
 transcode on a schedule.
 
 ## Commercial Processing
 
 The built-in Plex commercial skipper is replaced by media-hare tools. Both use a version of comskip. As of this
 writing the media-hare version is newer. media-hare doesn't call comskip directly, but uses a python program to
-enhance comskip such as allowing show specific settings. See [media-hare](https://github.com/double16/plex-hare) for
+enhance comskip such as allowing show specific settings. See [media-hare](https://github.com/double16/media-hare) for
 details.
 
 Plex background commercial scanning does not mark a file as processed. It seems to depend on commercials being found
@@ -31,7 +32,7 @@ program is called. So there is a safe fall back.
 ## Priorities
 
 Not related to media-hare but very useful is that some Plex processes priorities are adjusted to improve results on
-resource limited servers. See plex-process-priority.sh comments for details. Most importantly, TV recording processes
+resource limited machines. See plex-process-priority.sh comments for details. Most importantly, TV recording processes
 are set to real-time priority to reduce missed/late recordings when the server is under load.
 
 ## Usage
