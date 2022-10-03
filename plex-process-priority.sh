@@ -25,6 +25,9 @@ while true; do
         ionice -c 1 -n 5 -p ${PID}
     done
 
+    # On-demand transcode
+    pgrep -f "${TRANSCODER}.*segment_list" | xargs -r renice -n -4 -p
+
     # Plex Commercial Skipper use the lowest best-effort
     pgrep -f "${SKIPPER}" | xargs -r ionice -c 2 -n 7 -p
 
