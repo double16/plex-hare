@@ -13,23 +13,41 @@ INTERVAL="${INTERVAL:-2}"
 
 while true; do
 
+    AFFECTED_PIDS=()
+
     # Plex Tuner Service reads real time streams from the TV tuner
     pgrep -f "${TUNER}" | xargs -r renice -n -5 -p
 
     # Reads from tuner and produces mpegts
-    pgrep -f "${TRANSCODER}.*devices/dvb" | xargs -r renice -n -4 -p
+    for PID in $(pgrep -f "${TRANSCODER}.*/devices/"); do
+      renice -n -4 -p "${PID}"
+      AFFECTED_PIDS+=("${PID}")
+    done
 
     # Reads from mpegts and streams to disk
-    pgrep -f "${TRANSCODER}.*livetv/session" | while read PID; do
-        renice -n -4 -p ${PID}
-        ionice -c 1 -n 5 -p ${PID}
+    for PID in $(pgrep -f "${TRANSCODER}.*livetv/session"); do
+        renice -n -4 -p "${PID}"
+        ionice -c 1 -n 5 -p "${PID}"
+        AFFECTED_PIDS+=("${PID}")
     done
 
     # On-demand transcode
-    pgrep -f "${TRANSCODER}.*segment" | xargs -r renice -n -2 -p
+    # captures tv recording too, so 'segment' isn't good enough
+    pgrep -f "${TRANSCODER}.*segment" | while read PID; do
+        # exclude if in pid array
+        EXCLUDE=0
+        for APID in "${AFFECTED_PIDS[@]}"
+        do
+          if [[ "${APID}" == "${PID}" ]]; then
+            echo "Skipping affected pid ${APID}"
+            EXCLUDE=1
+          fi
+        done
+        [[ "${EXCLUDE}" == "0" ]] && renice -n -2 -p "${PID}"
+    done
 
     # Plex Commercial Skipper use the lowest best-effort
     pgrep -f "${SKIPPER}" | xargs -r ionice -c 2 -n 7 -p
 
-    sleep ${INTERVAL}
+    sleep "${INTERVAL}"
 done

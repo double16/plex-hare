@@ -25,7 +25,7 @@ for I in "$@"; do
   fi
 done
 
-if [[ -z "${FILE}" ]]; then
+if [[ -z "${MEDIA_CON}" ]] || [[ -z "${FILE}" ]]; then
   exec "${ORIGINAL_COMSKIP}" "$@"
 fi
 
@@ -35,4 +35,9 @@ docker exec "${MEDIA_CON}" "/usr/local/bin/comchap.py" --keep-edl --backup-edl "
 EDLFILE="${FILE%.*}.edl"
 if ! grep -q '^[0-9]' "${EDLFILE}" 2>/dev/null; then
   echo "0    1.00    0" > "${EDLFILE}"
+  if [[ $? -ne 0 ]]; then
+    stat "${EDLFILE}" >&2
+  fi
+  chown "--reference=${FILE}" "${EDLFILE}"
+  chmod ug+rw "${EDLFILE}"
 fi
