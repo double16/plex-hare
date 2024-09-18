@@ -6,6 +6,8 @@
 
 set -e
 
+[ -z "${UPDATE_HWACCEL_DRIVERS}" ] && exit 0
+
 APT_UPDATED=
 
 if [ -s '/sys/module/nvidia/version' ]; then
@@ -37,6 +39,6 @@ if [ -s '/sys/module/nvidia/version' ]; then
 #    fi
 #  done
   if [ -n "${NV_PKG_INSTALL}" ]; then
-      apt-get -y install "${NV_PKG_INSTALL[@]}"
+      apt-get -y install --install-suggests "${NV_PKG_INSTALL[@]}"
   fi
 fi
