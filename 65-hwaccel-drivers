@@ -6,8 +6,6 @@
 
 set -e
 
-[ -z "${UPDATE_HWACCEL_DRIVERS}" ] && exit 0
-
 APT_UPDATED=
 
 if [ -s '/sys/module/nvidia/version' ]; then
@@ -24,8 +22,6 @@ if [ -s '/sys/module/nvidia/version' ]; then
       NV_PKG_VERSION="$(apt list -a "${NV_PKG}-${NV_MAJOR_VER}${NV_PKG_SUFFIX}" 2>/dev/null | grep -F "${NV_VERSION}" | head -n 1 | tr -s '[:space:]' | cut -d ' ' -f 2)"
       if [ -n "${NV_PKG_VERSION}" ]; then
         NV_PKG_INSTALL+=("${NV_PKG}-${NV_MAJOR_VER}${NV_PKG_SUFFIX}=${NV_PKG_VERSION}")
-      else
-        NV_PKG_INSTALL+=("${NV_PKG}-${NV_MAJOR_VER}${NV_PKG_SUFFIX}")
       fi
     fi
   done
@@ -39,6 +35,6 @@ if [ -s '/sys/module/nvidia/version' ]; then
 #    fi
 #  done
   if [ -n "${NV_PKG_INSTALL}" ]; then
-      apt-get -y install --install-suggests "${NV_PKG_INSTALL[@]}"
+      apt-get -y install "${NV_PKG_INSTALL[@]}"
   fi
 fi
