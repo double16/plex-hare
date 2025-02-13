@@ -87,6 +87,8 @@ services:
       - TZ=America/Chicago
       # Changing permissions is necessary to make the transcode volume correct
       - CHANGE_CONFIG_DIR_OWNERSHIP=true
+      # Install hardware drivers matching the host version
+      - HWACCEL_DRIVERS_INSTALL=true
     volumes:
       - plextranscode:/transcode
       - plexconfig:/config
