@@ -30,7 +30,7 @@ jobs:
       - name: Get latest 3 Docker tags
         id: set-tags
         run: |
-          tags=$(curl -s "https://hub.docker.com/v2/repositories/plexinc/pms-docker/tags?page_size=3&ordering=last_updated" | jq -c '[.results[].name]')
+          tags=$(curl -s "https://hub.docker.com/v2/repositories/plexinc/pms-docker/tags?page_size=3&ordering=last_updated" | jq -c '[.results[].name] + ["public", "plexpass"]')
           echo "tags=$tags"
           echo "tags=$tags" >> $GITHUB_OUTPUT
 
