@@ -1,4 +1,4 @@
-ARG CHANNEL
+ARG CHANNEL=latest
 FROM plexinc/pms-docker:${CHANNEL}
 
 ENV DEBIAN_FRONTEND=noninteractive
