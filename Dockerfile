@@ -1,4 +1,4 @@
-ARG CHANNEL
+ARG CHANNEL=latest
 FROM plexinc/pms-docker:${CHANNEL}
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update &&\
     apt-get install -y software-properties-common apt-transport-https ca-certificates curl gnupg-agent &&\
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - &&\
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" &&\
+    add-apt-repository "deb https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" &&\
     apt-get update &&\
     apt-get install -y docker-ce-cli parallel nano &&\
     apt-get clean
