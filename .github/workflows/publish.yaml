@@ -30,16 +30,16 @@ jobs:
       - name: Get latest 3 Docker tags
         id: set-tags
         run: |
-          tags=$(curl -s "https://hub.docker.com/v2/repositories/plexinc/pms-docker/tags?page_size=10&ordering=last_updated" | jq -r '.results[].name' | grep -E '[0-9]+[.][0-9]+' | head -n 3)
-          echo "tags=public plexpass $tags"
-          echo "tags=public plexpass $tags" >> $GITHUB_OUTPUT
+          tags=$(curl -s "https://hub.docker.com/v2/repositories/plexinc/pms-docker/tags?page_size=3&ordering=last_updated" | jq -c '[.results[].name]')
+          echo "tags=$tags"
+          echo "tags=$tags" >> $GITHUB_OUTPUT
 
   build-and-push-image:
     needs: fetch-tags
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tag: ${{ fromJson(needs.fetch-tags.outputs.tags) }}
+        tag: public plexpass ${{ fromJson(needs.fetch-tags.outputs.tags) }}
     permissions:
       contents: read
       packages: write
