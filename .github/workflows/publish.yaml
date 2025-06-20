@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tag: public plexpass ${{ fromJson(needs.fetch-tags.outputs.tags) }}
+        tag: ${{ fromJson(needs.fetch-tags.outputs.tags) }}
     permissions:
       contents: read
       packages: write
