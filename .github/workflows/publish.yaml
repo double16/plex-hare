@@ -30,7 +30,7 @@ jobs:
       - name: Get latest 3 Docker tags
         id: set-tags
         run: |
-          tags=$(curl -s "https://hub.docker.com/v2/repositories/plexinc/pms-docker/tags?page_size=3&ordering=last_updated" | jq -c '[.results[].name] + ["public", "plexpass"]')
+          tags=$(curl -s "https://hub.docker.com/v2/repositories/plexinc/pms-docker/tags?page_size=3&ordering=last_updated" | jq -c '[.results[].name | select(test("^[0-9]"))] + ["public", "plexpass"]')
           echo "tags=$tags"
           echo "tags=$tags" >> $GITHUB_OUTPUT
 
@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
