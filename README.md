@@ -43,8 +43,6 @@ It is necessary that both the `media-hare` and `plex-hare` containers mount medi
 example, `/media`.
 
 ```yaml
-version: "3.4"
-
 volumes:
   plexoptimize:
   plexconfig:
@@ -68,9 +66,9 @@ services:
     image: ghcr.io/double16/plex-hare:public
     restart: unless-stopped
     cap_add:
-      - sys_nice
+      - SYS_NICE
       # for ioprio_class_rt
-      - sys_admin
+      - SYS_ADMIN
     ports:
       - "32400:32400/tcp"
       - "3005:3005/tcp"
@@ -87,8 +85,9 @@ services:
       - TZ=America/Chicago
       # Changing permissions is necessary to make the transcode volume correct
       - CHANGE_CONFIG_DIR_OWNERSHIP=true
-      # Install hardware drivers matching the host version
-      - HWACCEL_DRIVERS_INSTALL=true
+      # nvidia-container-runtime will mount all necessary libs, caps "video" is necessary for encoder lib
+      - HWACCEL_DRIVERS_INSTALL=false
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
     volumes:
       - plextranscode:/transcode
       - plexconfig:/config
