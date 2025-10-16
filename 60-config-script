@@ -27,7 +27,7 @@ COMSKIP="/usr/lib/plexmediaserver/Plex Commercial Skipper"
 COMSKIP_MOVED="/usr/lib/plexmediaserver/Plex Commercial Skipper.orig"
 COMSKIP_WRAPPER="/opt/Scripts/comskip-wrapper.sh"
 
-if [[ -e "${COMSKIP_WRAPPER}" ]] && [[ -e "${COMSKIP}" ]] && file "${COMSKIP}" | grep -q ELF; then
+if [[ -e "${COMSKIP_WRAPPER}" ]] && [[ -e "${COMSKIP}" ]] && grep -qF ELF "${COMSKIP}"; then
    mv -f "${COMSKIP}" "${COMSKIP_MOVED}"
    cp "${COMSKIP_WRAPPER}" "${COMSKIP}"
    chmod +x "${COMSKIP}"
